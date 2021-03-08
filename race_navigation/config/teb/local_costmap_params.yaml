@@ -2,7 +2,7 @@ local_costmap:
   # global_frame: odom
   global_frame: map
   robot_base_frame: base_footprint
-  transform_tolerance: 0.5
+  transform_tolerance: 0.3
 
   update_frequency: 10.0
   publish_frequency: 10.0 
