@@ -1,0 +1,10 @@
+<launch>
+
+    <arg name="map" default="race.yaml" />
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find race)/maps/$(arg map)"/>
+    <include file="$(find race)/launch/amcl.launch" />
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find race)/rviz/teb_nav.rviz"/>
+    <include file="$(find race)/launch/teb.launch"/>
+    <node pkg="race" type="vel_controll.py" name="vel_controller"/>
+
+</launch>
