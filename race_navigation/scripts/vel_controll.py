@@ -5,9 +5,10 @@ from geometry_msgs.msg import PoseArray
 import numpy as np
 import dynamic_reconfigure.client
 
-max_vel = 1.8
-min_vel = 0.7
-k = 0.01
+max_vel = 1.9
+min_vel = 0.758
+k = 0.0158
+lookahead = 0.62
 
 
 def callback(config):
@@ -16,19 +17,18 @@ def callback(config):
 
 rospy.init_node('vel_controller')
 client = dynamic_reconfigure.client.Client("/move_base/TebLocalPlannerROS", timeout=30, config_callback=callback)
-q = 1 / np.linspace(1, 5, 80)
+q = 1 / np.linspace(1, 1 / lookahead, 300)
 points = []
 vels = []
 globalP = 0
+length = 100
 
 
 def global_path_callback(data):
-    global globalP
-    if len(data.poses) > 80:
-        data.poses = data.poses[:80]
-        rate = 1
-    else:
-        rate = len(data.poses) / 80
+    global globalP, length
+    length = len(data.poses)
+    if len(data.poses) > 100:
+        data.poses = data.poses[:100]
     if len(data.poses) > 5:
         q2 = q[:len(data.poses) - 2]
         x = np.array([it.pose.position.x for it in data.poses])
@@ -41,14 +41,14 @@ def global_path_callback(data):
         points.append(res)
         if len(points) > 3:
             points.pop(0)
-        res = np.mean(points) * rate
+        res = np.mean(points)
         globalP = res
         # print(res)
 
 
 def local_path_callback(data):
-    if len(data.poses) > 80:
-        data.poses = data.poses[:80]
+    if len(data.poses) > 100:
+        data.poses = data.poses[:100]
     if len(data.poses) > 1:
         w = np.array([it.orientation.w for it in data.poses])
         x = np.array([it.orientation.x for it in data.poses])
@@ -58,15 +58,17 @@ def local_path_callback(data):
         dyaw = np.abs(np.diff(yaw))
         q2 = q[:len(dyaw)]
         res = np.mean(dyaw * q2)
-        r = res / 5 + globalP
+        r = res / 4 + globalP
         vel = k / r + min_vel
         if vel > max_vel:
             vel = max_vel
         vels.append(vel)
-        if len(vels) > 6:
+        if len(vels) > 5:
             vels.pop(0)
         vel = np.mean(vels)
         print(vel)
+        if length < 20:
+            vel *= 0.1
         client.update_configuration({'max_vel_x': vel})
 
 
