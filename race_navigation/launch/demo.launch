@@ -3,6 +3,5 @@
     <include file="$(find gazebo_pkg)/launch/race.launch"/>
     <include file="$(find race_navigation)/launch/teb_demo.launch"/>
     <include file="$(find race_navigation)/launch/teb_base.launch"/>
-    <node pkg="race_navigation" type="vel_controll.py" name="vel_controller"/>
 
 </launch>
