@@ -32,10 +32,10 @@ TebLocalPlannerROS:
   shrink_horizon_backup: true
   shrink_horizon_min_duration: 10.0
 
-  min_obstacle_dist: 0.1
+  min_obstacle_dist: 0.2
   include_costmap_obstacles: true
   costmap_obstacles_behind_robot_dist: 0.8
-  inflation_dist: 0.2
+  inflation_dist: 0.23
   include_dynamic_obstacles: false
   legacy_obstacle_association: true
   obstacle_association_force_inclusion_factor: 0.5
