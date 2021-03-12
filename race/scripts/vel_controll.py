@@ -5,12 +5,13 @@ from geometry_msgs.msg import PoseArray
 import numpy as np
 import dynamic_reconfigure.client
 import math
+from std_msgs.msg import Float64
 
 lookahead = 0.615
 max_vel = 1.6
 min_vel = 1
-k = 0.02
-points_in_cal = 40
+k = 0.023
+points_in_cal = 80
 slow_down_rate = 0.71
 slow_down_time = 10
 
@@ -25,6 +26,9 @@ def np_move_avg(a, n, mode="valid"):
 
 rospy.init_node('vel_controller')
 client = dynamic_reconfigure.client.Client("/move_base/TebLocalPlannerROS", timeout=30, config_callback=callback)
+pub = rospy.Publisher('/dyaw', Float64, queue_size=20)
+pub2 = rospy.Publisher('/nowG', Float64, queue_size=20)
+pub3 = rospy.Publisher('/vel', Float64, queue_size=20)
 q = 1 / np.linspace(1, 1 / lookahead, 300)
 points = []
 vels = []
@@ -47,7 +51,10 @@ def global_path_callback(data):
         yaw = np.arctan2(dx, dy)
         q2 = q[:len(yaw) - 1]
         dyaw = np.abs(np.diff(yaw) * q2)
+        msg = Float64()
         dyawG = math.fabs(np.ptp(yaw[:points_in_cal]))
+        msg.data = dyawG
+        pub.publish(msg)
         if nowG > 0:
             nowG -= 1
         res = np.mean(dyaw)
@@ -87,11 +94,17 @@ def local_path_callback(data):
             vel *= 0.1
         if length < 15:
             vel *= 0.05
-        if dyawG > 1.2:
+        if dyawG > 2:
             nowG = slow_down_time
+        msg = Float64()
+        msg.data = nowG / 3
+        pub2.publish(msg)
         if nowG > 0:
-            vel *= slow_down_rate
+            vel = 0.81
             print('slow down', nowG)
+        msg = Float64()
+        msg.data = vel
+        pub3.publish(msg)
         client.update_configuration({'max_vel_x': vel})
 
 
