@@ -4,15 +4,23 @@ from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseArray
 import numpy as np
 import dynamic_reconfigure.client
+import math
 
-max_vel = 1.9
-min_vel = 0.7585
-k = 0.01585
 lookahead = 0.615
+max_vel = 1.6
+min_vel = 1
+k = 0.02
+points_in_cal = 40
+slow_down_rate = 0.71
+slow_down_time = 10
 
 
 def callback(config):
     print(config['max_vel_x'])
+
+
+def np_move_avg(a, n, mode="valid"):
+    return np.convolve(a, np.ones((n,))/n, mode=mode)
 
 
 rospy.init_node('vel_controller')
@@ -22,21 +30,26 @@ points = []
 vels = []
 globalP = 0
 length = 100
+dyawG = []
+nowG = 0
 
 
 def global_path_callback(data):
-    global globalP, length
+    global globalP, length, dyawG, nowG
     length = len(data.poses)
     if len(data.poses) > 100:
         data.poses = data.poses[:100]
     if len(data.poses) > 5:
-        q2 = q[:len(data.poses) - 2]
-        x = np.array([it.pose.position.x for it in data.poses])
-        y = np.array([it.pose.position.y for it in data.poses])
+        x = np_move_avg([it.pose.position.x for it in data.poses], 4)
+        y = np_move_avg([it.pose.position.y for it in data.poses], 4)
         dx = x[1:] - x[:-1]
         dy = y[1:] - y[:-1]
         yaw = np.arctan2(dx, dy)
+        q2 = q[:len(yaw) - 1]
         dyaw = np.abs(np.diff(yaw) * q2)
+        dyawG = math.fabs(np.ptp(yaw[:points_in_cal]))
+        if nowG > 0:
+            nowG -= 1
         res = np.mean(dyaw)
         points.append(res)
         if len(points) > 3:
@@ -47,6 +60,7 @@ def global_path_callback(data):
 
 
 def local_path_callback(data):
+    global nowG
     if len(data.poses) > 100:
         data.poses = data.poses[:100]
     if len(data.poses) > 1:
@@ -66,13 +80,18 @@ def local_path_callback(data):
         if len(vels) > 5:
             vels.pop(0)
         vel = np.mean(vels)
-        print(vel)
-        if length < 30:
+        # print(vel)
+        if length < 40:
             vel *= 0.3
-        if length < 20:
+        if length < 25:
             vel *= 0.1
-        if length < 10:
+        if length < 15:
             vel *= 0.05
+        if dyawG > 1.2:
+            nowG = slow_down_time
+        if nowG > 0:
+            vel *= slow_down_rate
+            print('slow down', nowG)
         client.update_configuration({'max_vel_x': vel})
 
 

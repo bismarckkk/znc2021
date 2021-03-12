@@ -3,11 +3,15 @@
 from __future__ import print_function
 
 import os
+import getpass
 import time
 import hashlib
 import platform
 import tarfile
 from interactive import show, get_bool_ans, get_str_ans, save
+
+model_path = '~/zhinengche/src/gazebo_pkg/urdf'
+workspace_path = 'source ~/zhinengche/devel/setup.bash'
 
 def install_pkg():
     '''
@@ -104,7 +108,7 @@ def check_user():
         show('不要使用root用户执行本脚本！')
         exit(0)
     else:
-        show('Username:', os.getlogin())
+        show('Username:', getpass.getuser())
     
 def build_pkg():
     '''
@@ -148,7 +152,7 @@ def config_env():
     show('正在修改环境变量...')
 
     env_path = '~/.bashrc'
-    words = 'source ~/gazebo_test_ws/devel/setup.bash'
+    words = workspace_path
     if not search_str(env_path, words):
         os.system("echo '%s' >> ~/.bashrc" %words)
         show('环境变量已正确配置')
@@ -180,7 +184,7 @@ def init():
     while not get_bool_ans('是否已开启录屏？'):
         show('请按照规则开启录屏！')
 
-    md5_result = md5sum_dir('~/gazebo_test_ws/src/gazebo_pkg/urdf')                             # 计算原始文件 MD5 摘要
+    md5_result = md5sum_dir(model_path)                             # 计算原始文件 MD5 摘要
 
 #    build_pkg()
     config_env()
@@ -197,25 +201,9 @@ def uninit():
 
     # md5_result = md5sum_dir('~/.gazebo/models')
     # md5_result = md5sum_dir('~/iflytek_gazebo_ws/src/gazebo_pkg', md5_result)
-    md5_result = md5sum_dir('~/gazebo_test_ws/src/gazebo_pkg/urdf')
+    md5_result = md5sum_dir(model_path)
 
     
     return md5_result
 
-if __name__  == '__main__':
-    try:
-        md5_result1 = md5sum_dir('resources')
 
-        md5_result2 = md5sum_dir('~/.gazebo/models')
-        md5_result2 = md5sum_dir('~/iflytek_gazebo_ws/src/gazebo_pkg/urdf', md5_result2)
-
-        print(id(md5_result1))
-        print(id(md5_result2))
-
-        if cmp(md5_result1, md5_result2) == 0:
-            print('equal')
-
-    except KeyboardInterrupt:
-        print('\n')
-        print('操作已取消')
-        exit(0)
