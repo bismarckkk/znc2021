@@ -88,12 +88,12 @@ def local_path_callback(data):
             vels.pop(0)
         vel = np.mean(vels)
         # print(vel)
-        if length < 40:
-            vel *= 0.3
-        if length < 25:
-            vel *= 0.1
-        if length < 15:
-            vel *= 0.05
+       # if length < 40:
+        #    vel *= 0.3
+     #   if length < 25:
+      #      vel *= 0.1
+       # if length < 15:
+        #    vel *= 0.05
         if dyawG > 2:
             nowG = slow_down_time
         msg = Float64()
