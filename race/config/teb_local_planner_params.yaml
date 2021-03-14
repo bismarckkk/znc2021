@@ -3,10 +3,10 @@ TebLocalPlannerROS:
   map_frame: /map
 
   acc_lim_x: 8
-  acc_lim_theta: 11
+  acc_lim_theta: 11.5
   max_vel_x: 2
   max_vel_x_backwards: 1
-  max_vel_theta: 9
+  max_vel_theta: 11
   min_turning_radius: 0.0
   is_footprint_dynamic: true
   footprint_model:
@@ -46,18 +46,18 @@ TebLocalPlannerROS:
   no_inner_iterations: 5
   no_outer_iterations: 4
   penalty_epsilon: 0.25
-  weight_acc_lim_x: 1.0
+  weight_acc_lim_x: 2
   weight_acc_lim_theta: 1000.0
   weight_max_vel_x: 1
   weight_max_vel_theta: 1000.0
   weight_kinematics_nh: 1000.0
   weight_kinematics_forward_drive: 1000
   weight_kinematics_turning_radius: 0.0
-  weight_optimaltime: 1000.0
+  weight_optimaltime: 900.0
   weight_obstacle: 1000.0
   weight_viapoint: 1000.0
-  weight_shortest_path : 100
-  weight_inflation: 0.1
+  weight_shortest_path : 1000.0
+  weight_inflation: 0.11
   weight_adapt_factor: 2.0
 
   enable_homotopy_class_planning: true

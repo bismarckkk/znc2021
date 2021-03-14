@@ -7,12 +7,12 @@ import dynamic_reconfigure.client
 import math
 from std_msgs.msg import Float64
 
-lookahead = 0.625  #0.615
-max_vel = 1.6  #1.6
+lookahead = 0.634  #0.615  #0.625
+max_vel = 1.62  #1.6
 min_vel = 1   #1
-k = 0.022   #0.23
+k = 0.032   #0.23   #0.022
 points_in_cal = 95  #80
-slow_down_rate = 0.71  #0.71
+slow_down_rate = 0.76  #0.71  #72
 slow_down_time = 10  #10
 
 
@@ -88,12 +88,12 @@ def local_path_callback(data):
             vels.pop(0)
         vel = np.mean(vels)
         # print(vel)
-       # if length < 40:
-        #    vel *= 0.3
-     #   if length < 25:
-      #      vel *= 0.1
-       # if length < 15:
-        #    vel *= 0.05
+        if length < 35:
+            vel *= 0.3
+        if length < 25:
+            vel *= 0.15
+        if length < 10:
+            vel *= 0.05
         if dyawG > 2:
             nowG = slow_down_time
         msg = Float64()
