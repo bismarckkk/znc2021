@@ -1,19 +1,26 @@
 #!/usr/bin/env python3
 import rospy
 from nav_msgs.msg import Path
-from geometry_msgs.msg import PoseArray
+from geometry_msgs.msg import PoseArray, PoseWithCovarianceStamped
 import numpy as np
 import dynamic_reconfigure.client
 import math
 from std_msgs.msg import Float64
+import os
+import json
+from threading import Thread
 
 lookahead = 0.634  #0.615  #0.625
 max_vel = 1.62  #1.6
 min_vel = 1   #1
 k = 0.032   #0.23   #0.022
 points_in_cal = 95  #80
-slow_down_rate = 0.76  #0.71  #72
+slow_down_rate = 0.765  #0.71  #72
 slow_down_time = 10  #10
+stop = False
+
+location = {'x': 0, 'y': 0}
+end = {}
 
 
 def callback(config):
@@ -22,6 +29,13 @@ def callback(config):
 
 def np_move_avg(a, n, mode="valid"):
     return np.convolve(a, np.ones((n,))/n, mode=mode)
+
+
+def get_end_pose():
+    global end
+    path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))),
+                        'start_game/pose.json')
+    end = json.load(open(path, 'r'))['position']
 
 
 rospy.init_node('vel_controller')
@@ -100,17 +114,44 @@ def local_path_callback(data):
         msg.data = nowG / 3
         pub2.publish(msg)
         if nowG > 0:
-            vel = 0.81
+            vel *= slow_down_rate
             print('slow down', nowG)
+        if stop:
+            vel = 0
+            print('stop')
         msg = Float64()
         msg.data = vel
         pub3.publish(msg)
         client.update_configuration({'max_vel_x': vel})
 
 
+def amcl_callback(data: PoseWithCovarianceStamped):
+    global location
+    pose = data.pose.pose.position
+    location['x'] = pose.x
+    location['y'] = pose.y
+
+
+def stop_car():
+    global stop
+    rate = rospy.Rate(15)
+    while not rospy.is_shutdown():
+        if (location['x'] - end['x']) ** 2 + (location['y'] - end['y']) ** 2 < 1.2:
+            client.update_configuration({'max_vel_x': 0})
+            print('stop')
+            stop = True
+        else:
+            stop = False
+        rate.sleep()
+
+
 if __name__ == '__main__':
+    get_end_pose()
+    print(end)
     receive_path = rospy.Subscriber('/move_base/GlobalPlanner/plan', Path, global_path_callback)
     receive_path2 = rospy.Subscriber('/move_base/TebLocalPlannerROS/teb_poses', PoseArray, local_path_callback)
+    receive_path3 = rospy.Subscriber('/amcl_pose', PoseWithCovarianceStamped, amcl_callback)
+    stop_thread = Thread(daemon=True, target=stop_car).start()
     print('ok')
     rospy.spin()
 
