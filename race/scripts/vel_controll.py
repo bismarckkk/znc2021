@@ -7,13 +7,13 @@ import dynamic_reconfigure.client
 import math
 from std_msgs.msg import Float64
 
-lookahead = 0.615
-max_vel = 1.6
-min_vel = 1
-k = 0.023
-points_in_cal = 80
-slow_down_rate = 0.71
-slow_down_time = 10
+lookahead = 0.625  #0.615
+max_vel = 1.7  #1.6
+min_vel = 1   #1
+k = 0.022   #0.23
+points_in_cal = 95  #80
+slow_down_rate = 0.71  #
+slow_down_time = 10  #10
 
 
 def callback(config):
