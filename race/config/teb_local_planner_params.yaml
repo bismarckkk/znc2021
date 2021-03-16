@@ -11,7 +11,7 @@ TebLocalPlannerROS:
   is_footprint_dynamic: true
   footprint_model:
     type: "polygon"
-    vertices: [[0.14, 0.17], [0.14, -0.17], [-0.14, -0.17], [-0.14, 0.17]]
+    vertices: [[0.15, 0.15], [0.15, -0.15], [-0.15, -0.15], [-0.15, 0.15]]
 
   yaw_goal_tolerance: 1
   xy_goal_tolerance: 0.2

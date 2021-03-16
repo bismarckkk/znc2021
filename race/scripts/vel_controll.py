@@ -11,11 +11,11 @@ import json
 from threading import Thread
 
 lookahead = 0.634  #0.615  #0.625
-max_vel = 1.62  #1.6
+max_vel = 1.68  #1.6
 min_vel = 1   #1
-k = 0.032   #0.23   #0.022
+k = 0.052   #0.23   #0.022
 points_in_cal = 95  #80
-slow_down_rate = 0.765  #0.71  #72
+slow_down_rate = 0.785  #0.71  #72
 slow_down_time = 10  #10
 stop = False
 
