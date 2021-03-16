@@ -125,7 +125,7 @@ def local_path_callback(data):
         client.update_configuration({'max_vel_x': vel})
 
 
-def amcl_callback(data: PoseWithCovarianceStamped):
+def amcl_callback(data):
     global location
     pose = data.pose.pose.position
     location['x'] = pose.x
@@ -136,13 +136,16 @@ def stop_car():
     global stop
     rate = rospy.Rate(15)
     while not rospy.is_shutdown():
-        if (location['x'] - end['x']) ** 2 + (location['y'] - end['y']) ** 2 < 1.2:
-            client.update_configuration({'max_vel_x': 0})
-            print('stop')
-            stop = True
-        else:
-            stop = False
-        rate.sleep()
+        try:
+            if (location['x'] - end['x']) ** 2 + (location['y'] - end['y']) ** 2 < 1.2:
+                client.update_configuration({'max_vel_x': 0})
+                print('stop')
+                #stop = True
+            else:
+                stop = False
+            rate.sleep()
+        except:
+            print('Error happen when send vel')
 
 
 if __name__ == '__main__':
@@ -151,7 +154,7 @@ if __name__ == '__main__':
     receive_path = rospy.Subscriber('/move_base/GlobalPlanner/plan', Path, global_path_callback)
     receive_path2 = rospy.Subscriber('/move_base/TebLocalPlannerROS/teb_poses', PoseArray, local_path_callback)
     receive_path3 = rospy.Subscriber('/amcl_pose', PoseWithCovarianceStamped, amcl_callback)
-    stop_thread = Thread(daemon=True, target=stop_car).start()
+    #stop_thread = Thread(daemon=True, target=stop_car).start()
     print('ok')
     rospy.spin()
 
