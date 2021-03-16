@@ -62,7 +62,7 @@ def global_path_callback(data):
         y = np_move_avg([it.pose.position.y for it in data.poses], 4)
         dx = x[1:] - x[:-1]
         dy = y[1:] - y[:-1]
-        yaw = np.arctan2(dx, dy)
+        yaw = np.insert(np.arctan2(dx, dy), 0, location['yaw'])
         q2 = q[:len(yaw) - 1]
         dyaw = np.abs(np.diff(yaw) * q2)
         msg = Float64()
@@ -128,8 +128,14 @@ def local_path_callback(data):
 def amcl_callback(data):
     global location
     pose = data.pose.pose.position
+    ob = data.pose.pose.orientation
+    w = ob.w
+    x = ob.x
+    y = ob.y
+    z = ob.z
     location['x'] = pose.x
     location['y'] = pose.y
+    location['yaw'] = math.atan2(2 * (w * z + x * y), 1 - 2 * (z * z + y * y))
 
 
 def stop_car():
