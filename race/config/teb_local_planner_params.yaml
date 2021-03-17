@@ -3,11 +3,11 @@ TebLocalPlannerROS:
   map_frame: /map
 
   acc_lim_x: 8
-  acc_lim_theta: 11.5
+  acc_lim_theta: 6.5
   max_vel_x: 2
   max_vel_x_backwards: 1
-  max_vel_theta: 11
-  min_turning_radius: 0.08
+  max_vel_theta: 15
+  min_turning_radius: 0.16
   is_footprint_dynamic: true
   footprint_model:
     type: "polygon"
@@ -52,7 +52,7 @@ TebLocalPlannerROS:
   weight_max_vel_theta: 1000.0
   weight_kinematics_nh: 1000.0
   weight_kinematics_forward_drive: 1000
-  weight_kinematics_turning_radius: 150.0
+  weight_kinematics_turning_radius: 25.0
   weight_optimaltime: 900.0
   weight_obstacle: 1000.0
   weight_viapoint: 1000.0
