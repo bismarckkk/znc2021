@@ -75,3 +75,4 @@ TebLocalPlannerROS:
   visualize_hc_graph: false
   viapoints_all_candidates: true
   switching_blocking_period: 0.0
+  wheel base : 0.15
