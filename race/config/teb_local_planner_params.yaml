@@ -7,7 +7,7 @@ TebLocalPlannerROS:
   max_vel_x: 2
   max_vel_x_backwards: 1
   max_vel_theta: 15
-  min_turning_radius: 0.16
+  min_turning_radius: 0.0
   is_footprint_dynamic: true
   footprint_model:
     type: "polygon"
@@ -52,7 +52,7 @@ TebLocalPlannerROS:
   weight_max_vel_theta: 1000.0
   weight_kinematics_nh: 1000.0
   weight_kinematics_forward_drive: 1000
-  weight_kinematics_turning_radius: 25.0
+  weight_kinematics_turning_radius: 0.0
   weight_optimaltime: 900.0
   weight_obstacle: 1000.0
   weight_viapoint: 1000.0
@@ -75,4 +75,3 @@ TebLocalPlannerROS:
   visualize_hc_graph: false
   viapoints_all_candidates: true
   switching_blocking_period: 0.0
-  wheel base : 0.15
