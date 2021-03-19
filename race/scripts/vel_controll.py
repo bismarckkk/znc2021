@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 import rospy
 from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseArray, PoseWithCovarianceStamped
@@ -154,7 +154,7 @@ if __name__ == '__main__':
     receive_path = rospy.Subscriber('/move_base/GlobalPlanner/plan', Path, global_path_callback)
     receive_path2 = rospy.Subscriber('/move_base/TebLocalPlannerROS/teb_poses', PoseArray, local_path_callback)
     receive_path3 = rospy.Subscriber('/amcl_pose', PoseWithCovarianceStamped, amcl_callback)
-    stop_thread = Thread(daemon=True, target=stop_car).start()
+    stop_thread = Thread(target=stop_car).start()
     print('ok')
     rospy.spin()
 
