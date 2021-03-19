@@ -11,12 +11,12 @@ import json
 from threading import Thread
 
 lookahead = 0.634  #0.615  #0.625
-max_vel = 1.62  #1.6
+max_vel = 1.7  #1.6
 min_vel = 1   #1
-k = 0.032   #0.23   #0.022
+k = 0.043    #0.23   #0.022
 points_in_cal = 95  #80
-slow_down_rate = 0.765  #0.71  #72
-slow_down_time = 10  #10
+slow_down_rate = 0.74  #0.71  #72
+slow_down_time = 12  #10
 stop = False
 
 location = {'x': 0, 'y': 0}
@@ -154,7 +154,7 @@ if __name__ == '__main__':
     receive_path = rospy.Subscriber('/move_base/GlobalPlanner/plan', Path, global_path_callback)
     receive_path2 = rospy.Subscriber('/move_base/TebLocalPlannerROS/teb_poses', PoseArray, local_path_callback)
     receive_path3 = rospy.Subscriber('/amcl_pose', PoseWithCovarianceStamped, amcl_callback)
-    #stop_thread = Thread(daemon=True, target=stop_car).start()
+    # stop_thread = Thread(daemon=True, target=stop_car).start()
     print('ok')
     rospy.spin()
 
