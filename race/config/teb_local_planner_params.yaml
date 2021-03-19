@@ -13,8 +13,8 @@ TebLocalPlannerROS:
     type: "polygon"
     vertices: [[0.14, 0.17], [0.14, -0.17], [-0.14, -0.17], [-0.14, 0.17]]
 
-  yaw_goal_tolerance: 1
-  xy_goal_tolerance: 0.2
+  yaw_goal_tolerance: 0.6
+  xy_goal_tolerance: 0.7
   free_goal_vel: false
 
   dt_ref: 0.5
@@ -47,7 +47,7 @@ TebLocalPlannerROS:
   no_outer_iterations: 4
   penalty_epsilon: 0.25
   weight_acc_lim_x: 2
-  weight_acc_lim_theta: 1000.0
+  weight_acc_lim_theta: 150.0
   weight_max_vel_x: 1
   weight_max_vel_theta: 1000.0
   weight_kinematics_nh: 1000.0

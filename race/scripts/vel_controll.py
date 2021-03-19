@@ -102,12 +102,12 @@ def local_path_callback(data):
             vels.pop(0)
         vel = np.mean(vels)
         # print(vel)
-        if length < 35:
+        '''if length < 40:
             vel *= 0.3
-        if length < 25:
+        if length < 30:
             vel *= 0.15
-        if length < 10:
-            vel *= 0.05
+        if length < 20:
+            vel *= 0.05'''
         if dyawG > 2:
             nowG = slow_down_time
         msg = Float64()
@@ -140,7 +140,7 @@ def stop_car():
             if (location['x'] - end['x']) ** 2 + (location['y'] - end['y']) ** 2 < 1.2:
                 client.update_configuration({'max_vel_x': 0})
                 print('stop')
-                #stop = True
+                stop = True
             else:
                 stop = False
             rate.sleep()
@@ -154,7 +154,7 @@ if __name__ == '__main__':
     receive_path = rospy.Subscriber('/move_base/GlobalPlanner/plan', Path, global_path_callback)
     receive_path2 = rospy.Subscriber('/move_base/TebLocalPlannerROS/teb_poses', PoseArray, local_path_callback)
     receive_path3 = rospy.Subscriber('/amcl_pose', PoseWithCovarianceStamped, amcl_callback)
-    # stop_thread = Thread(daemon=True, target=stop_car).start()
+    stop_thread = Thread(daemon=True, target=stop_car).start()
     print('ok')
     rospy.spin()
 
