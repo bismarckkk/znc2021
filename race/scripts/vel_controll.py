@@ -11,19 +11,25 @@ import json
 from threading import Thread
 
 lookahead = 0.634  #0.615  #0.625
-max_vel = 1.68  #1.6
+max_vel = 1.7  #1.6
 min_vel = 1   #1
-k = 0.052   #0.23   #0.022
+k = 0.054   #0.23   #0.022
 points_in_cal = 95  #80
 slow_down_rate = 0.8  #0.71  #72
 slow_down_time = 10  #10
 stop = False
+now_vel = 2
+penalty_epsilon = -1
 
 location = {'x': 0, 'y': 0}
 end = {}
 
 
 def callback(config):
+    global now_vel, penalty_epsilon
+    if penalty_epsilon == -1:
+        penalty_epsilon = config['penalty_epsilon']
+    now_vel = config['max_vel_x']
     print(config['max_vel_x'])
 
 
@@ -50,6 +56,7 @@ globalP = 0
 length = 100
 dyawG = []
 nowG = 0
+first_t = False
 
 
 def global_path_callback(data):
@@ -101,13 +108,6 @@ def local_path_callback(data):
         if len(vels) > 5:
             vels.pop(0)
         vel = np.mean(vels)
-        # print(vel)
-        if length < 35:
-            vel *= 0.3
-        if length < 25:
-            vel *= 0.15
-        if length < 10:
-            vel *= 0.05
         if dyawG > 2:
             nowG = slow_down_time
         msg = Float64()
@@ -117,8 +117,11 @@ def local_path_callback(data):
             vel *= slow_down_rate
             print('slow down', nowG)
         if stop:
-            vel = 0
+            # vel = 0
             print('stop')
+        if first_t:
+            vel = 0.72
+            print('slow down')
         msg = Float64()
         msg.data = vel
         pub3.publish(msg)
@@ -139,16 +142,22 @@ def amcl_callback(data):
 
 
 def stop_car():
-    global stop
+    global stop, first_t
     rate = rospy.Rate(15)
     while not rospy.is_shutdown():
         try:
-            if (location['x'] - end['x']) ** 2 + (location['y'] - end['y']) ** 2 < 1.2:
-                client.update_configuration({'max_vel_x': 0})
+            if (location['x'] - end['x']) ** 2 + (location['y'] - end['y']) ** 2 < 1:
+                # client.update_configuration({'max_vel_x': 0, 'penalty_epsilon': 0})
                 print('stop')
-                #stop = True
+                stop = True
             else:
                 stop = False
+            if (location['x'] - 4.41007) ** 2 + (location['y'] + 1.00114) ** 2 < 1.15 and location['y'] < -0.5:
+                if not first_t:
+                    client.update_configuration({'max_vel_x': 0.72})
+                first_t = True
+            else:
+                first_t = False
             rate.sleep()
         except:
             print('Error happen when send vel')
@@ -160,7 +169,7 @@ if __name__ == '__main__':
     receive_path = rospy.Subscriber('/move_base/GlobalPlanner/plan', Path, global_path_callback)
     receive_path2 = rospy.Subscriber('/move_base/TebLocalPlannerROS/teb_poses', PoseArray, local_path_callback)
     receive_path3 = rospy.Subscriber('/amcl_pose', PoseWithCovarianceStamped, amcl_callback)
-    #stop_thread = Thread(daemon=True, target=stop_car).start()
+    stop_thread = Thread(daemon=True, target=stop_car).start()
     print('ok')
     rospy.spin()
 

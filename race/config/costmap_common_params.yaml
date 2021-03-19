@@ -1,7 +1,7 @@
-footprint: [[0.15, 0.15], [0.15, -0.15], [-0.15, -0.15], [-0.15, 0.15]]
+footprint: [[0.15, 0.175], [0.15, -0.175], [-0.15, -0.175], [-0.15, 0.175]]
 
 obstacle_range: 4
-raytrace_range: 4
+raytrace_range: 3
 
 static_layer:
   enabled: true
@@ -26,3 +26,4 @@ obstacle_layer:
     marking: true,
     clearing: true
   }
+
