@@ -11,9 +11,9 @@ import json
 from threading import Thread
 
 lookahead = 0.634  #0.615  #0.625
-max_vel = 1.68  #1.6
+max_vel = 1.7  #1.6
 min_vel = 1   #1
-k = 0.052   #0.23   #0.022
+k = 0.054   #0.23   #0.022
 points_in_cal = 95  #80
 slow_down_rate = 0.785  #0.71  #72
 slow_down_time = 10  #10
@@ -120,7 +120,7 @@ def local_path_callback(data):
             # vel = 0
             print('stop')
         if first_t:
-            vel = 0.75
+            vel = 0.72
             print('slow down')
         msg = Float64()
         msg.data = vel
@@ -152,10 +152,9 @@ def stop_car():
                 stop = True
             else:
                 stop = False
-            if (location['x'] - 4.01007) ** 2 + (location['y'] + 1.00114) ** 2 < 1.2 and location['y'] < -0.51:
+            if (location['x'] - 4.41007) ** 2 + (location['y'] + 1.00114) ** 2 < 1.15 and location['y'] < -0.5:
                 if not first_t:
-                    client.update_configuration({'max_vel_x': 0.75})
-                print('slow down')
+                    client.update_configuration({'max_vel_x': 0.72})
                 first_t = True
             else:
                 first_t = False

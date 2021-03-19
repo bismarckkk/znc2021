@@ -11,10 +11,10 @@ TebLocalPlannerROS:
   is_footprint_dynamic: true
   footprint_model:
     type: "polygon"
-    vertices: [[0.15, 0.15], [0.15, -0.15], [-0.15, -0.15], [-0.15, 0.15]]
+    vertices: [[0.15, 0.175], [0.15, -0.175], [-0.15, -0.175], [-0.15, 0.175]]
 
   yaw_goal_tolerance: 1
-  xy_goal_tolerance: 0.2
+  xy_goal_tolerance: 1
   free_goal_vel: false
 
   dt_ref: 0.5
@@ -35,7 +35,7 @@ TebLocalPlannerROS:
   min_obstacle_dist: 0.02
   include_costmap_obstacles: true
   costmap_obstacles_behind_robot_dist: 0.8
-  inflation_dist: 0.23
+  inflation_dist: 0.39
   include_dynamic_obstacles: false
   legacy_obstacle_association: true
   obstacle_association_force_inclusion_factor: 0.5
@@ -75,3 +75,4 @@ TebLocalPlannerROS:
   visualize_hc_graph: false
   viapoints_all_candidates: true
   switching_blocking_period: 0.0
+
