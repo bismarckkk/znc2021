@@ -13,7 +13,7 @@ from threading import Thread
 lookahead = 0.634  #0.615  #0.625
 max_vel = 1.7  #1.6
 min_vel = 1   #1
-k = 0.043    #0.23   #0.022
+k = 0.0435    #0.23   #0.022
 points_in_cal = 95  #80
 slow_down_rate = 0.74  #0.71  #72
 slow_down_time = 12  #10
@@ -137,7 +137,7 @@ def stop_car():
     rate = rospy.Rate(15)
     while not rospy.is_shutdown():
         try:
-            if (location['x'] - end['x']) ** 2 + (location['y'] - end['y']) ** 2 < 1.2:
+            if (location['x'] - end['x']) ** 2 + (location['y'] - end['y']) ** 2 < 1:
                 client.update_configuration({'max_vel_x': 0})
                 print('stop')
                 stop = True
