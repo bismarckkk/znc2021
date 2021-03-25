@@ -2,19 +2,19 @@ TebLocalPlannerROS:
   odom_topic: odom
   map_frame: /map
 
-  acc_lim_x: 8.5
-  acc_lim_theta: 12
+  acc_lim_x: 8
+  acc_lim_theta: 11.5
   max_vel_x: 2
   max_vel_x_backwards: 1
-  max_vel_theta: 7.5
+  max_vel_theta: 11
   min_turning_radius: 0.0
   is_footprint_dynamic: true
   footprint_model:
     type: "polygon"
-    vertices: [[0.15, 0.175], [0.15, -0.175], [-0.15, -0.175], [-0.15, 0.175]]
+    vertices: [[0.14, 0.17], [0.14, -0.17], [-0.14, -0.17], [-0.14, 0.17]]
 
-  yaw_goal_tolerance: 1
-  xy_goal_tolerance: 1
+  yaw_goal_tolerance: 0.6
+  xy_goal_tolerance: 0.5
   free_goal_vel: false
 
   dt_ref: 0.5
@@ -32,10 +32,10 @@ TebLocalPlannerROS:
   shrink_horizon_backup: true
   shrink_horizon_min_duration: 10.0
 
-  min_obstacle_dist: 0.035
+  min_obstacle_dist: 0.02
   include_costmap_obstacles: true
   costmap_obstacles_behind_robot_dist: 0.8
-  inflation_dist: 0.39
+  inflation_dist: 0.23
   include_dynamic_obstacles: false
   legacy_obstacle_association: true
   obstacle_association_force_inclusion_factor: 0.5
@@ -47,17 +47,16 @@ TebLocalPlannerROS:
   no_outer_iterations: 4
   penalty_epsilon: 0.25
   weight_acc_lim_x: 2
-  weight_acc_lim_theta: 950.0
-  weight_max_vel_x: 2.2
-
-  weight_max_vel_theta: 950.0
+  weight_acc_lim_theta: 150.0
+  weight_max_vel_x: 1
+  weight_max_vel_theta: 1000.0
   weight_kinematics_nh: 1000.0
   weight_kinematics_forward_drive: 1000
   weight_kinematics_turning_radius: 0.0
-  weight_optimaltime: 900.0
+  weight_optimaltime: 1000.0
   weight_obstacle: 1000.0
   weight_viapoint: 1000.0
-  weight_shortest_path : 950.0
+  weight_shortest_path : 1000.0
   weight_inflation: 0.11
   weight_adapt_factor: 2.0
 
@@ -76,4 +75,3 @@ TebLocalPlannerROS:
   visualize_hc_graph: false
   viapoints_all_candidates: true
   switching_blocking_period: 0.0
-

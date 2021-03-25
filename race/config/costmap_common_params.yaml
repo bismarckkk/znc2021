@@ -1,6 +1,6 @@
-footprint: [[0.15, 0.175], [0.15, -0.175], [-0.15, -0.175], [-0.15, 0.175]]
+footprint: [[0.14, 0.17], [0.14, -0.17], [-0.14, -0.17], [-0.14, 0.17]]
 
-obstacle_range: 4
+obstacle_range: 3
 raytrace_range: 3
 
 static_layer:
@@ -8,7 +8,7 @@ static_layer:
 
 inflation_layer:
   enabled: true
-  inflation_radius: 0.275
+  inflation_radius: 0.30
   cost_scaling_factor: 10.0
 
 obstacle_layer:
@@ -26,4 +26,3 @@ obstacle_layer:
     marking: true,
     clearing: true
   }
-

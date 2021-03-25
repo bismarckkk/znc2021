@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 import rospy
 from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseArray, PoseWithCovarianceStamped
@@ -13,23 +13,17 @@ from threading import Thread
 lookahead = 0.634  #0.615  #0.625
 max_vel = 1.7  #1.6
 min_vel = 1   #1
-k = 0.054   #0.23   #0.022
+k = 0.0435    #0.23   #0.022
 points_in_cal = 95  #80
-slow_down_rate = 0.8  #0.71  #72
-slow_down_time = 10  #10
+slow_down_rate = 0.74  #0.71  #72
+slow_down_time = 12  #10
 stop = False
-now_vel = 2
-penalty_epsilon = -1
 
 location = {'x': 0, 'y': 0}
 end = {}
 
 
 def callback(config):
-    global now_vel, penalty_epsilon
-    if penalty_epsilon == -1:
-        penalty_epsilon = config['penalty_epsilon']
-    now_vel = config['max_vel_x']
     print(config['max_vel_x'])
 
 
@@ -56,7 +50,6 @@ globalP = 0
 length = 100
 dyawG = []
 nowG = 0
-first_t = False
 
 
 def global_path_callback(data):
@@ -69,7 +62,7 @@ def global_path_callback(data):
         y = np_move_avg([it.pose.position.y for it in data.poses], 4)
         dx = x[1:] - x[:-1]
         dy = y[1:] - y[:-1]
-        yaw = np.insert(np.arctan2(dx, dy), 0, location['yaw'])
+        yaw = np.arctan2(dx, dy)
         q2 = q[:len(yaw) - 1]
         dyaw = np.abs(np.diff(yaw) * q2)
         msg = Float64()
@@ -108,6 +101,13 @@ def local_path_callback(data):
         if len(vels) > 5:
             vels.pop(0)
         vel = np.mean(vels)
+        # print(vel)
+        '''if length < 40:
+            vel *= 0.3
+        if length < 30:
+            vel *= 0.15
+        if length < 20:
+            vel *= 0.05'''
         if dyawG > 2:
             nowG = slow_down_time
         msg = Float64()
@@ -117,11 +117,8 @@ def local_path_callback(data):
             vel *= slow_down_rate
             print('slow down', nowG)
         if stop:
-            # vel = 0
+            vel = 0
             print('stop')
-        if first_t:
-            vel = 0.72
-            print('slow down')
         msg = Float64()
         msg.data = vel
         pub3.publish(msg)
@@ -131,33 +128,21 @@ def local_path_callback(data):
 def amcl_callback(data):
     global location
     pose = data.pose.pose.position
-    ob = data.pose.pose.orientation
-    w = ob.w
-    x = ob.x
-    y = ob.y
-    z = ob.z
     location['x'] = pose.x
     location['y'] = pose.y
-    location['yaw'] = math.atan2(2 * (w * z + x * y), 1 - 2 * (z * z + y * y))
 
 
 def stop_car():
-    global stop, first_t
+    global stop
     rate = rospy.Rate(15)
     while not rospy.is_shutdown():
         try:
             if (location['x'] - end['x']) ** 2 + (location['y'] - end['y']) ** 2 < 1:
-                # client.update_configuration({'max_vel_x': 0, 'penalty_epsilon': 0})
+                client.update_configuration({'max_vel_x': 0})
                 print('stop')
                 stop = True
             else:
                 stop = False
-            if (location['x'] - 4.41007) ** 2 + (location['y'] + 1.00114) ** 2 < 1.15 and location['y'] < -0.5:
-                if not first_t:
-                    client.update_configuration({'max_vel_x': 0.72})
-                first_t = True
-            else:
-                first_t = False
             rate.sleep()
         except:
             print('Error happen when send vel')
@@ -169,7 +154,7 @@ if __name__ == '__main__':
     receive_path = rospy.Subscriber('/move_base/GlobalPlanner/plan', Path, global_path_callback)
     receive_path2 = rospy.Subscriber('/move_base/TebLocalPlannerROS/teb_poses', PoseArray, local_path_callback)
     receive_path3 = rospy.Subscriber('/amcl_pose', PoseWithCovarianceStamped, amcl_callback)
-    stop_thread = Thread(daemon=True, target=stop_car).start()
+    stop_thread = Thread(target=stop_car).start()
     print('ok')
     rospy.spin()
 
